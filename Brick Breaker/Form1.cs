@@ -13,24 +13,28 @@ namespace Brick_Breaker
 {
     public partial class Form1 : Form
     {
+        //Make players and obstacles
         Rectangle hero = new Rectangle(275, 300, 30, 5);
         Rectangle ball = new Rectangle(285, 250, 8, 8);
         Rectangle yellow = new Rectangle(100, 50, 30, 20);
         Rectangle blue = new Rectangle(100, 100, 30, 20);
         Rectangle gray = new Rectangle(100, 150, 30, 20);
 
-
+        //Create list of obstacles
         List<Rectangle> yellowBlock = new List<Rectangle>();
         List<Rectangle> blueBlock = new List<Rectangle>();
         List<Rectangle> grayBlock = new List<Rectangle>();
 
+        //List block sizes
         int blockSizeX = 30;
         int blockSizeY = 20;
 
+        //List speeds
         int ballSpeedX = 5;
         int ballSpeedY = 5;
         int lvl = 1;
 
+        //List integers
         int blocksX = 100;
         int line1Y = 50;
         int line2Y = 100;
@@ -40,24 +44,27 @@ namespace Brick_Breaker
         int score = 0;
         int life = 3;
 
+        //Hitboxes
         bool left = false;
         bool right = false;
         bool up = false;   
         bool down = false;
 
-
+        //Create ints for player to move
         int heroSpeed = 8;
         bool leftPressed = false;
         bool rightPressed = false;
 
+        //Random Generator
         Random randGen = new Random();
 
-
+        //Create colours
         SolidBrush whiteBrush = new SolidBrush(Color.White);
         SolidBrush yellowBrush = new SolidBrush(Color.Yellow);
         SolidBrush blueBrush = new SolidBrush(Color.Blue);
         SolidBrush grayBrush = new SolidBrush(Color.Gray);
 
+        //Create sounds
         SoundPlayer hit = new SoundPlayer(Properties.Resources.hit);
         SoundPlayer loseLife = new SoundPlayer(Properties.Resources.life);
         SoundPlayer level = new SoundPlayer(Properties.Resources.level);
@@ -69,10 +76,13 @@ namespace Brick_Breaker
 
         private void gameTimer_Tick(object sender, EventArgs e)
         {
+            //Declare hitboxes
             Rectangle upBox = new Rectangle(ball.X + 1, ball.Y - 1, 3, 2);
             Rectangle downBox = new Rectangle(ball.X + 1, ball.Y + ball.Height - 1, 3, 2);
             Rectangle leftBox = new Rectangle(ball.X - 3, ball.Y + 1, 2, 3);
             Rectangle rightBox = new Rectangle(ball.X - 1 + ball.Width, ball.Y + 1, 2, 3);
+
+            //Make player move
             if (leftPressed && hero.X > 0)
             {
                 hero.X -= heroSpeed;
@@ -83,6 +93,7 @@ namespace Brick_Breaker
                 hero.X += heroSpeed;
             }
 
+            //Ball movement
             if (ball.X < 0)
             {
                 ballSpeedX = ballSpeedX * -1;
@@ -98,6 +109,7 @@ namespace Brick_Breaker
                 ballSpeedY = ballSpeedY * -1;
             }
 
+            //When the ball touches the bottom of the screen
             if (ball.Y > this.Height - ball.Height - 20)
             {
                 loseLife.Play();
@@ -107,6 +119,8 @@ namespace Brick_Breaker
                 ballSpeedX = -5;
                 ballSpeedY = 5;
             }
+
+            //When the player hits the ball
             if (ball.IntersectsWith(hero))
             {
                 hit.Play();
@@ -119,6 +133,7 @@ namespace Brick_Breaker
                 }
             }
 
+            //Check to see which way to send the ball, and delete the obstacles 
             for (int i = 0; i < blueBlock.Count; i++)
             {
                 
@@ -178,6 +193,7 @@ namespace Brick_Breaker
                 }
             }
 
+            //Check to see which way to send the ball, and delete the obstacles 
             for (int i = 0; i < yellowBlock.Count; i++)
             {
                 if (leftBox.IntersectsWith(yellowBlock[i]) && right == false && up == false && down == false)
@@ -236,6 +252,7 @@ namespace Brick_Breaker
                 }
             }
 
+            //Check to see which way to send the ball, and don't delete the obstacles
             for (int i = 0; i < grayBlock.Count; i++)
             {
                 if (leftBox.IntersectsWith(grayBlock[i]) && right == false && up == false && down == false)
@@ -284,17 +301,21 @@ namespace Brick_Breaker
                 }
             }
 
+            //Display score
             scoreOutput.Text = $"Score: {score}     Level: {lvl}    Lives: {life}";
 
+            //Let the ball move
             ball.X -= ballSpeedX;
             ball.Y -= ballSpeedY;
 
+            //When you lose
             if (life == 0)
             {
                 lose.Play();
                 gameTimer.Stop();
             }
 
+            //Go to level 2
             if (yellowBlock.Count == 0 && blueBlock.Count == 0 && lvl == 1)
             {
                 level.Play();
@@ -312,6 +333,7 @@ namespace Brick_Breaker
                 }
             }
 
+            //Go to level 3 and endless mode
             if (yellowBlock.Count == 0 && blueBlock.Count == 0 && lvl >= 2)
             {
                 level.Play();
@@ -395,8 +417,11 @@ namespace Brick_Breaker
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
+            //Paint hero and ball
             e.Graphics.FillRectangle(whiteBrush, hero);
             e.Graphics.FillEllipse(whiteBrush, ball);
+
+            //Paint blocks for level 1
             if (lvl == 1)
             {
                 for (int i = 0; i < yellowBlock.Count; i++)
@@ -408,6 +433,7 @@ namespace Brick_Breaker
                     e.Graphics.FillRectangle(blueBrush, blueBlock[i]);
                 }
             }
+            //Paint block for level 2
             if (lvl == 2)
             {
                 for (int i = 0; i < yellowBlock.Count; i++)
@@ -423,6 +449,7 @@ namespace Brick_Breaker
                     e.Graphics.FillRectangle(grayBrush, grayBlock[i]);
                 }
             }
+            //Paint block for level 3
             if (lvl >= 3)
             {
                 for (int i = 0; i < yellowBlock.Count; i++)
@@ -443,6 +470,7 @@ namespace Brick_Breaker
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            //Player movement
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -456,6 +484,7 @@ namespace Brick_Breaker
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
+            //Player movement
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -469,6 +498,7 @@ namespace Brick_Breaker
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //Determine obstacles for level 1
             changerX = 0;
             for (int i = 0; i < 8; i++)
             {
